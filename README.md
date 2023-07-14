@@ -45,7 +45,7 @@ Prerequisites
 ===========================================================================
 
 
-Authors: Ting Yu designed and wrote GeLuster.
+Authors: Ting Yu and Junchi Ma designed and wrote GeLuster.
 
 Contact:
  Any questions, problems, bugs are welcome and should be dumped to
