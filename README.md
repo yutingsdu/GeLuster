@@ -35,7 +35,7 @@ Prerequisites
 
    A typical GeLuster command might be:
 
-   TransMeta -B bamFiles_list -s first -o TransMeta_outdir -p 25
+   GeLuster -r reads.fastq -o geluster_outdir
 
 ===========================================================================
 
