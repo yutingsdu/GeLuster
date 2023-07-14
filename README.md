@@ -31,11 +31,11 @@ Prerequisites
 
 ---------------------------------------------------------------------------
 
-** Typical commands **
-
-   A typical GeLuster command might be:
-
-   GeLuster -r reads.fastq -o geluster_outdir
+    ** Typical commands **
+    
+    A typical GeLuster command might be:
+    
+    GeLuster -r reads.fastq -o geluster_outdir
 
 ---------------------------------------------------------------------------
 
