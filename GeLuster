@@ -103,7 +103,7 @@ samtools sort  -o $prefix.bam $prefix.sam
 $shellpath/src/get_alignment_info $prefix".bam" $tempDir/$Nx".self.alignment.info" 
 
 $shellpath/src/get_cluster $query fq $tempDir/$Nx".seudoref-reads.info" $tempDir/$Nx".alignment.info" $tempDir/$Nx".self.alignment.info" $Nx $tempDir
-exit
+
 ########################################=======================================================
 Nx=N80
 
