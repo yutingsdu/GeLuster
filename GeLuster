@@ -1,0 +1,158 @@
+#!/bin/bash
+shellpath=`dirname $0`
+output_dir="geluster_outdir"
+temp_dir="tempDir"
+reads="No_input"
+seqType="cDNA"
+usage()
+{
+cat << EOT
+===========================================================================
+
+GeLuster v.1.0 usage:
+
+** Required **
+
+--reads/-r <string>		: path to the read file
+
+---------------------------------------------------------------------------
+
+** Options **
+
+--help/-h			  : Output GeLuster Help Information.
+
+--version/-v			  : Print current version of TransMeta.
+
+--output_dir/-o <string>	  : Output path, default: transmeta_outdir.
+
+---------------------------------------------------------------------------
+
+** Typical commands **
+
+A typical TransMeta command for paired-end data might be:
+
+  GeLuster -r reads.fastq -o geluster_outdir
+
+===========================================================================
+EOT
+}
+#usage
+
+# parse options:
+RET=`getopt -o hvr:o: \
+--long help,version,reads:,output_dir:\
+  -n ' * ERROR' -- "$@"`
+
+
+# Note the quotes around $RET: they are essential!
+eval set -- "$RET"
+# set option values
+while true; do
+    case "$1" in
+        -h | --help ) usage; exit 1;;
+        -v | --version ) echo "** The current version of GeCluster is v.1.0 **"; exit 1;;
+        -o | --output_dir) output_dir=$2     
+			shift 2 ;;
+        -r | --reads) 	   reads=$2 
+			shift 2 ;;
+        -- ) shift; break ;;
+        * ) echoerror "internal error!" ; exit 1 ;;
+     esac
+done
+
+#echo $coverage $individual_coverage $annotation
+
+if [ $reads == "No_input" ]; then
+         echo "    "
+         echo "[Error] : Reads file is not provided!"
+         echo "    "
+	 usage
+         exit 1
+fi
+if [ ! -e $reads ];then
+        echo " ** Error: reads file is not exist! **"
+        exit 1
+fi
+
+MyDate=$(date "+%d/%m/%Y %T")
+if [ ! -x "$output_dir" ]; then  
+    mkdir -p $output_dir/$temp_dir
+else 
+    echo "[$MyDate] [Warning] : $output_dir exists already. It will be overwritten."
+    rm -rf $output_dir
+    mkdir -p $output_dir/$temp_dir
+fi
+########################################=======================================================
+tempDir=$output_dir/$temp_dir
+Nx=N60
+query=$reads
+$shellpath/src/PseudoRef $query fq $Nx $seqType $tempDir
+
+ref=$tempDir/$Nx".seudo.fasta"
+prefix=$tempDir/$Nx".seudo"
+minimap2 -ax splice -k 11 $ref $query > $prefix.sam
+samtools sort  -o $prefix.bam $prefix.sam
+$shellpath/src/get_alignment_info $prefix".bam" $tempDir/$Nx".alignment.info" 
+
+
+query2=$tempDir/$Nx".seudo.fasta"
+prefix=$tempDir/$Nx".seudo-self"
+
+minimap2 -ax splice -k 11 -X -N 1 $ref $query2 > $prefix.sam
+samtools sort  -o $prefix.bam $prefix.sam
+$shellpath/src/get_alignment_info $prefix".bam" $tempDir/$Nx".self.alignment.info" 
+
+$shellpath/src/get_cluster $query fq $tempDir/$Nx".seudoref-reads.info" $tempDir/$Nx".alignment.info" $tempDir/$Nx".self.alignment.info" $Nx $tempDir
+exit
+########################################=======================================================
+Nx=N80
+
+ref=$tempDir/$Nx".seudo.fasta"
+query=$tempDir/N60.singleton.fasta
+
+$shellpath/src/PseudoRef $query fa $Nx $seqType $tempDir 
+
+prefix=$tempDir/$Nx".seudo"
+
+minimap2 -ax splice -k 11 $ref $query > $prefix.sam 
+samtools sort  -o $prefix.bam $prefix.sam
+$shellpath/src/get_alignment_info $prefix".bam" $tempDir/$Nx".alignment.info" 
+
+query2=$tempDir/$Nx".seudo.fasta"
+prefix=$tempDir/$Nx".seudo-self"
+
+minimap2 -ax splice -k 11 -X -N 1 $ref $query2 > $tempDir/$prefix.sam
+samtools sort  -o $prefix.bam $prefix.sam
+$shellpath/src/get_alignment_info $prefix".bam" $tempDir/$Nx".self.alignment.info" 
+
+$shellpath/src/get_cluster $query fa $tempDir/$Nx".seudoref-reads.info" $tempDir/$Nx".alignment.info" $tempDir/$Nx".self.alignment.info" $Nx $tempDir
+########################################=======================================================
+Nx=N90
+
+ref=$tempDir/$Nx".seudo.fasta"
+query=$tempDir/N80.singleton.fasta
+
+$shellpath/src/PseudoRef $query fa $Nx $seqType $tempDir 
+
+prefix=$tempDir/$Nx".seudo"
+
+minimap2 -ax splice -k 11 $ref $query > $prefix.sam 
+samtools sort  -o $prefix.bam $prefix.sam
+$shellpath/src/get_alignment_info $prefix".bam" $tempDir/$Nx".alignment.info" 
+
+query2=$tempDir/$Nx".seudo.fasta"
+prefix=$tempDir/$Nx".seudo-self"
+
+minimap2 -ax splice -k 11 -X -N 1 $ref $query2 > $tempDir/$prefix.sam
+samtools sort  -o $prefix.bam $prefix.sam
+$shellpath/src/get_alignment_info $prefix".bam" $tempDir/$Nx".self.alignment.info" 
+
+$shellpath/src/get_cluster $query fa $tempDir/$Nx".seudoref-reads.info" $tempDir/$Nx".alignment.info" $tempDir/$Nx".self.alignment.info" $Nx $tempDir
+
+cat $output_dir/$temp_dir/N60.myCluster_multi.tsv $output_dir/$temp_dir/N80.myCluster_multi.tsv $output_dir/$temp_dir/N90.myCluster_multi.tsv >$output_dir/GeLuster.tsv
+########################################=======================================================
+
+MyDate=$(date "+%d/%m/%Y %T")
+echo "[$MyDate] Congratulations."
+
+
