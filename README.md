@@ -30,6 +30,17 @@ Prerequisites
 ---------------------------------------------------------------------------
 
     ** Options **
+    --help/-h			  : Output GeLuster Help Information.
+
+    --version/-v			  : Print current version of GeLuster.
+
+    --iteration/-i <int>		  : Number of GeLuster iterations ([3,9], default: 3).
+
+    --seqType/-s <string>		  : dRNA for direct RNA (default:cDNA).
+
+    --rform/-f <string>		  : fa for .fasta(.fa) format, fq for .fastq(.fq) format (default: fq).
+
+    --output_dir/-o <string>	  : Output path, default: geluster_outdir.
 
 
 ---------------------------------------------------------------------------
@@ -37,8 +48,10 @@ Prerequisites
     ** Typical commands **
     
     A typical GeLuster command might be:
-    
-    GeLuster -r reads.fastq -o geluster_outdir
+
+    GeLuster -r reads.fastq -f fq -s cDNA -o geluster_outdir
+
+
 
 ---------------------------------------------------------------------------
 
