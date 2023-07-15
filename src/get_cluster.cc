@@ -52,7 +52,7 @@ void add_reads(map<string,vector<string> >& seudoref_alignedreads_map,string seu
 void get_cluster_pro(map<string,vector<string> >& seudoref_alignedreads_map,//N50
 		     map<string,vector<string> >& seudoref_alignedreads_map2) //N30
 {
-    cerr<<"Begin getting cluster..."<<endl;
+    //cerr<<"Begin getting cluster..."<<endl;
     map<string,bool> used_reads;
     map<string,bool> current_reads;
     vector<string> reads_in_current_cluster;
@@ -153,8 +153,8 @@ void get_cluster3(map<string,vector<string> >& seudoref_alignedreads_map)
      map<string,bool> used_ref;
      map<string,bool> used_reads;
      int idx = 0;
-     if(Nx == "N80") idx = 100000;
-     else if(Nx == "N90") idx = 500000;
+     //if(iFlag == "2nd") idx = 100000;
+     //else if(iFlag == "3rd") idx = 500000;
      /*seudoref_seudoreads_map
       * key	value
       *seudo_0: seudo_1, seudo_2;
@@ -252,7 +252,7 @@ void get_cluster3(map<string,vector<string> >& seudoref_alignedreads_map)
 				cout<<"WARNING:"<<it1->second[j]<<endl;
 			       	continue;
 			}
-			out_my_cluster2<<dataID_detailedID_map[it1->second[j]]<<" ,gene_cluster_"<<idx<<",transcript_cluster_"<<idx<<'\n';
+			out_my_cluster2<<"@"<<dataID_detailedID_map[it1->second[j]].substr(1)<<" ,gene_cluster_"<<idx<<'\n';//<<",transcript_cluster_"<<idx<<'\n';
 			used_reads[it1->second[j]] = true;
 			used_ref[it1->second[j]] = true;
 		  }
@@ -278,7 +278,7 @@ void get_cluster3(map<string,vector<string> >& seudoref_alignedreads_map)
 	{
 	  for(size_t i=0;i<it->second.size();i++){
 	
-	    out_my_cluster2<<dataID_detailedID_map[it->second[i]]<<" ,gene_cluster_"<<idx<<",transcript_cluster_"<<idx<<'\n';
+	    out_my_cluster2<<"@"<<dataID_detailedID_map[it->second[i]].substr(1)<<" ,gene_cluster_"<<idx<<'\n';//",transcript_cluster_"<<idx<<'\n';
 	    used_reads[it->second[i]] = true;
 	    //if(seudoref_seudoreads_map.find(it->second[i]) != seudoref_seudoreads_map.end())
 	    //{
@@ -310,32 +310,10 @@ void get_cluster3(map<string,vector<string> >& seudoref_alignedreads_map)
 	*/
 	idx++;
     }
-    if(Nx == "N90")
+    //if(nx == "N90")
+    if(0)
     {
-     for(size_t i=0;i<dataidx_length_vec.size();i++)
-     {
-         int readidx = dataidx_length_vec[i].first;
-	 string readid = dataid[readidx];
-	 if(used_reads.find(readid) != used_reads.end()) continue;
-	 int idx_ = dataID_idx_map[ readid ];
 
-	 int L = dataidx_length_vec[i].second;
-	 if(L > 500)
-	 {
-	     out_my_cluster<<dataID_detailedID_map[readid]<<" ,gene_cluster_"<<idx<<",transcript_cluster_"<<idx<<'\n';
-	     out_singleton<<">"<<dataID_detailedID_map[readid].substr(1)<<'\n';
-	     out_singleton<<data[idx_]<<'\n';
-	     idx++;
-	 }
-	 else {
-	     //out_post<<">"<<dataID_detailedID_map[readid].substr(1)<<'\n';
-	     //out_post<<data[idx_]<<'\n';
-	     out_post<<dataID_detailedID_map[readid]<<" ,gene_cluster_"<<idx<<",transcript_cluster_"<<idx<<'\n';
-	     idx++;
-	 }
-
-
-     }
     }
     else{
      for(size_t i=0;i<dataidx_length_vec.size();i++)
@@ -343,7 +321,7 @@ void get_cluster3(map<string,vector<string> >& seudoref_alignedreads_map)
 	int readidx = dataidx_length_vec[i].first;
 	string readid = dataid[readidx];
         if(used_reads.find(readid) != used_reads.end()) continue;
-        out_my_cluster<<dataID_detailedID_map[readid]<<" ,gene_cluster_"<<idx<<",transcript_cluster_"<<idx<<'\n';
+        out_my_cluster<<"@"<<dataID_detailedID_map[readid].substr(1)<<" ,gene_cluster_"<<idx<<'\n';//",transcript_cluster_"<<idx<<'\n';
 
         int idx_ = dataID_idx_map[ readid ];
         out_singleton<<">"<<dataID_detailedID_map[readid].substr(1)<<'\n';
@@ -356,7 +334,7 @@ void get_cluster3(map<string,vector<string> >& seudoref_alignedreads_map)
 }
 void get_cluster2(map<string,vector<string> >& seudoref_alignedreads_map)
 {
-    cerr<<"Begin getting cluster..."<<endl;
+    //cerr<<"Begin getting cluster..."<<endl;
     map<string,bool> used_reads;
     map<string,bool> current_reads;
     vector<string> reads_in_current_cluster;
@@ -523,7 +501,7 @@ void get_cluster()
 }
 void get_seudo_alignment_info(char* file,map<string,vector<string> >& seudoref_alignedreads_map)
 {
-    cerr<<"Begin getting sedu-alignment info from "<<file<<"..."<<endl;
+    //cerr<<"Begin getting sedu-alignment info from "<<file<<"..."<<endl;
     ifstream in(file);
     string s;
     istringstream istr;
@@ -572,18 +550,20 @@ void get_seudo_alignment_info(char* file,map<string,vector<string> >& seudoref_a
 			<<id<<"("<<start<<" "<<end<<")"<<'\n';
 		*/
 	    }
-	    else cout<<"BAD"<<endl;
+	    else {
+		    //cout<<"BAD"<<endl;
+	    }
 	}
 
 	istr.clear();
     }
-    cout<<"check: "<<II<<endl;
+    //cout<<"check: "<<II<<endl;
 
 }
 map<string,string> seudoref_readid_map;
 void get_reads_in_seudo_ref(char*file)
 {
-    cerr<<"Begin getting ref-reads info from "<<file<<"..."<<endl;
+    //cerr<<"Begin getting ref-reads info from "<<file<<"..."<<endl;
     ifstream in(file);
     string s;
     istringstream istr;
@@ -615,12 +595,12 @@ void get_reads_in_seudo_ref(char*file)
 	}
 	else cluster_seudorefinfo_map[cidx].push_back(sri);
     }
-    cout<<"seudo ref number: "<<cluster_seudorefinfo_map.size()<<" "<<reads_in_seudoref.size()<<endl;
+    //cout<<"seudo ref number: "<<cluster_seudorefinfo_map.size()<<" "<<reads_in_seudoref.size()<<endl;
     return;
 }
 void get_self_alignment_info(char* file)
 {
-     cerr<<"Begin getting sedu-alignment info from "<<file<<"..."<<endl;
+    //cerr<<"Begin getting sedu-alignment info from "<<file<<"..."<<endl;
     ifstream in(file);
     string s;
     istringstream istr;
@@ -690,44 +670,46 @@ void get_self_alignment_info(char* file)
         sort(it->second.begin(),it->second.end());
 	it->second.erase(unique(it->second.begin(),it->second.end()),it->second.end());
     }
-    cout<<"self-to-self size: "<<seudoref_seudoreads_map.size()<<" "<<seudoreads_seudoref_map.size()<<endl;
+    //cout<<"self-to-self size: "<<seudoref_seudoreads_map.size()<<" "<<seudoreads_seudoref_map.size()<<endl;
 }
 int main(int argc,char* argv[])
 {
     if(argc == 1) {
         cout<<"-"<<endl;
         cout<<"This is a simple program to get the cluster information from seudo_read_alignment.info(id chr strand start_pos end_pos flag)."<<endl;
-        cout<<"./exe reads.fastq fq (or fa for .fasta file) Nx_ref-read.info Nx_read_alignment.info Nx_self.alignment.info Nx (e.g. N10) "<<endl;
+        cout<<"./exe reads.fastq fq (or fa for .fasta file) iFlag-ref-read.info iFlag_read_alignment.info iFlag_self.alignment.info iFlag (e.g. 1st,2nd,3rd,4th...) seqType outputdir"<<endl;
         cout<<"-"<<endl;
 	return 0;
     }
-     string filetype=argv[2];
+    string filetype=argv[2];
+
+    seqFlag = argv[7];
+    if(seqFlag == "dRNA") DS_MODE = false;
+    else if(seqFlag == "cDNA") DS_MODE = true;
 
     if(filetype == "fq")
         load_data_fastq(argv[1]);
     else if(filetype == "fa")
         load_data_fasta(argv[1]);
     sort(dataidx_length_vec.begin(),dataidx_length_vec.end(),sorter);
-    Nx = argv[6];
-    output_dir = argv[7];
-    double x = atof(Nx.substr(1).c_str());
-    N = (1.0*x)/100.0;
+    iFlag = argv[6];
+    set();
+
+    output_dir = argv[8];
 
     get_reads_in_seudo_ref(argv[3]);
     get_seudo_alignment_info(argv[4],seudoref_alignedreads_map);
     get_self_alignment_info(argv[5]);
 
-    string file1 = output_dir + "/" + Nx+".myCluster_singleton.tsv";
-    string file2 = output_dir + "/" + Nx+".myCluster_multi.tsv";
-    string file3 = output_dir + "/" + Nx+".singleton.fasta";
-    string file4 = output_dir + "/" + "unconsidered.tsv";
+    string file1 = output_dir + "/" + iFlag+".myCluster_singleton.tsv";
+    string file2 = output_dir + "/" + iFlag+".myCluster_multi.tsv";
+    string file3 = output_dir + "/" + iFlag+".singleton.fasta";
+
     out_my_cluster.open(file1.c_str()); //single
     out_my_cluster2.open(file2.c_str()); //multi
     out_singleton.open(file3.c_str());//singleton_read
-    if(Nx == "N90") 
-	    out_post.open(file4.c_str());
 
-    get_cluster3(seudoref_alignedreads_map);//get cluster from on rean_alignment.info(N50 or N30 or N10)
+    get_cluster3(seudoref_alignedreads_map);
     out_my_cluster.close();
     out_my_cluster2.close();
     return 0;

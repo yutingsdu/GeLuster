@@ -17,21 +17,41 @@ vector<string> dataid;
 map<string,string> dataID_detailedID_map;
 map<string,int> dataID_idx_map;
 unsigned long long Length = 0;
-
-string Nx = "";
+bool DS_MODE=true;
+string seqFlag="cDNA";
+string iFlag = "";
 double N = 0;
+bool drna = false;
+void set()
+{
+    if(iFlag == "1st") N=0.6;
+    else if(iFlag == "2nd") N=0.8;
+    else if(iFlag == "3rd") N=0.9;
+    else N=0.95;
+    return;
+}
 bool sorter(pair<int,int>p1, pair<int,int> p2)
 {
     return (p1.second>p2.second || 
 		    (p1.second == p2.second) && (p1.first<p2.second));
 }
+void change (std::string& seq) {
+  std::string string_;
+  for (int i =0; i < seq.size(); i++) {
+    char c = seq[i];
+    if(c == 'U' || c=='u')
+            seq[i]='T';
+  }
+  return;
+}
+
 void load_data_fasta(char* file)
 {
 
     ifstream in;
     in.open(file);
-    time_t beg = time(NULL);
-    std::cerr << "Begin loading reads ..." << std::endl;
+    //time_t beg = time(NULL);
+    //std::cerr << "Begin loading reads ..." << std::endl;
     istringstream istr;
     string s,temp,id;
     int i=0;
@@ -46,6 +66,7 @@ void load_data_fasta(char* file)
 	id_=id_.substr(1);
 	istr.clear();
 	dataID_detailedID_map[id_] = id;
+	if(!DS_MODE) change(s);
 	data.push_back(s);
 	dataid.push_back(id_);
 	pair<int,int> p = make_pair(i,s.length());
@@ -55,18 +76,20 @@ void load_data_fasta(char* file)
 	i++;
 
     }
-    time_t end = time(NULL);
-    cerr << data.size()<<"("<<dataidx_length_vec.size()<<" "<<Length<<")" 
-	    <<" reads have been loaded, "
-         << "elapsed time: " << (end-beg) << " s)" << std::endl;
+    //time_t end = time(NULL);
+    
+    //cerr << data.size()<<"("<<dataidx_length_vec.size()<<" "<<Length<<")" 
+	    //<<" reads have been loaded, "
+         //<< "elapsed time: " << (end-beg) << " s)" << std::endl;
+	 
     in.close();
 }
 void load_data_fastq(char* file) 
 {
     ifstream in;
     in.open(file);
-    time_t beg = time(NULL);
-    std::cerr << "Begin loading reads ..." << std::endl;
+    //time_t beg = time(NULL);
+    //std::cerr << "Begin loading reads ..." << std::endl;
     istringstream istr;
     string s,temp,id;
     int i=0;
@@ -81,6 +104,7 @@ void load_data_fastq(char* file)
 	id_=id_.substr(1);
 	dataID_detailedID_map[id_] = id;
 	istr.clear();
+	if(!DS_MODE) change(s);
 	data.push_back(s);
 	dataid.push_back(id_);
 	pair<int,int> p = make_pair(i,s.length());
@@ -90,10 +114,12 @@ void load_data_fastq(char* file)
 	i++;
 
     }
-    time_t end = time(NULL);
+    //time_t end = time(NULL);
+    /*
     cerr << data.size()<<"("<<dataidx_length_vec.size()<<" "<<Length<<")" 
 	    <<" reads have been loaded, "
          << "elapsed time: " << (end-beg) << " s)" << std::endl;
+    */	 
     in.close();
     return;
 }

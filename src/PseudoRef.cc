@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <algorithm>
 #include <vector>
-#include "../utility.h"
+#include "utility.h"
 #include "p_utility.h"
 
 using namespace std;
@@ -13,8 +13,6 @@ map<kmer_int_type_t, int> minimizers_in_ref;
 map<kmer_int_type_t, vector<int> > minimizers_in_ref2;
 string output_dir="";
 int current_ref_idx = 0;
-bool DS_MODE=true;
-string seqFlag="cDNA";
 
 bool check_sequence_drna(int idx, string& sequence)
 {
@@ -77,11 +75,13 @@ bool check_sequence_drna(int idx, string& sequence)
      {
         minimizers_in_ref[all_minimizers[i]] = 1;
      }
+     /*
      cout<<dataid[idx]<<" minimizers-vs-length: "
 	<<all_minimizers.size()<<" / "<<sequence.length()<<" "
 	<<(1.0*all_minimizers.size())/(1.0*sequence.length())
 	<<" in-vs-out: "<<in<<" "<<out
 	<<'\n';
+	*/
      return true;
     }
     return false;
@@ -149,11 +149,13 @@ bool check_sequence3(int idx, string& sequence)
      {
         minimizers_in_ref[all_minimizers[i]] = 1;
      }
+     /*
      cout<<dataid[idx]<<" minimizers-vs-length: "
 	<<all_minimizers.size()<<" / "<<sequence.length()<<" "
 	<<(1.0*all_minimizers.size())/(1.0*sequence.length())
 	<<" in-vs-out: "<<in<<" "<<out
 	<<'\n';
+     */
      return true;
     }
     return false;
@@ -221,11 +223,13 @@ bool check_sequence2(int idx, string& sequence)
      {
         minimizers_in_ref[all_minimizers[i]] = 1;
      }
+     /*
      cout<<dataid[idx]<<" minimizers-vs-length: "
 	<<all_minimizers.size()<<" / "<<sequence.length()<<" "
 	<<(1.0*all_minimizers.size())/(1.0*sequence.length())
 	<<" in-vs-out: "<<in<<" "<<out
 	<<'\n';
+	*/
      return true;
     }
     return false;
@@ -353,6 +357,7 @@ bool check_sequence(int idx, string& sequence)
      //sort(ref_shared_m.begin(),ref_shared_m.end());
      //ref_shared_m.erase(unique(ref_shared_m.begin(),ref_shared_m.end()),ref_shared_m.end());
      //int max = num_of_most_element(ref_shared_m);//最多能与某一个ref share 多少个minimizer
+     /*
      cout<<dataid[idx]<<" minimizers-vs-length: "
 	<<all_minimizers.size()<<" / "<<sequence.length()<<" "
 	<<(1.0*all_minimizers.size())/(1.0*sequence.length())
@@ -361,12 +366,13 @@ bool check_sequence(int idx, string& sequence)
 	<<ref_shared_m.size()<<" "
 	<<max<<" "
 	<<'\n';
+	*/
      for(size_t i=0;i<ref_shared_m.size();i++)
      {
 	 break;
          cout<<ref_shared_m[i]<<" ";
      }
-     cout<<'\n';
+     //cout<<'\n';
      return true;
     }
     return false;
@@ -374,7 +380,7 @@ bool check_sequence(int idx, string& sequence)
 void get_seudo_reference()
 {
     time_t beg = time(NULL);
-    std::cerr << "Begin getting seudo-reference ..." << std::endl;
+    //std::cerr << "Begin getting seudo-reference ..." << std::endl;
     sort(dataidx_length_vec.begin(),dataidx_length_vec.end(),sorter);
     unsigned long long Length_ = 0;
     int Idx = 0;
@@ -387,20 +393,19 @@ void get_seudo_reference()
 	   break;
 	}
     }
-    cerr<<Nx<<" "<<Length_<<" "<<Idx<<endl;
     string info="";
     string seq="";
     int i1=0,i2=0;
     int seudo_idx=0;
-    ofstream out((output_dir+"/"+Nx+".seudo.fasta").c_str());
-    ofstream out2((output_dir+"/"+Nx+".seudoref-reads.info").c_str());
+    ofstream out((output_dir+"/"+iFlag+".pseudo.fasta").c_str());
+    ofstream out2((output_dir+"/"+iFlag+".pseudoref-reads.info").c_str());
     for(size_t i=0;i<=Idx;i++){
 	int idx = dataidx_length_vec[i].first; //index 
 	//if(i%4 !=0 ) continue;//trick
    	//if(i>0 && i%10 == 0)
    	if(i>0 && i%1 == 0 && seq != "")
 	{
-	  out<<">seudo_"<<seudo_idx<<" "<<info<<endl;
+	  out<<">pseudo_"<<seudo_idx<<" "<<info<<endl;
 	  out<<seq<<endl;
 	  info="";
 	  seq="";
@@ -410,15 +415,15 @@ void get_seudo_reference()
 	}
 	bool sequence_ok = false;
 	if(DS_MODE){
-         if(Nx == "N60")sequence_ok = check_sequence(idx,data[idx]);
-	 else if(Nx == "N80") sequence_ok = check_sequence2(idx,data[idx]);
-	 else if(Nx == "N90") sequence_ok = check_sequence3(idx,data[idx]);
+         if(iFlag == "1st")sequence_ok = check_sequence(idx,data[idx]);
+	 else if(iFlag == "2nd") sequence_ok = check_sequence2(idx,data[idx]);
+	 else if(iFlag == "3rd") sequence_ok = check_sequence3(idx,data[idx]);
 	}
 	else
 	{
-	  if(Nx == "N60")sequence_ok = check_sequence_drna(idx,data[idx]);
-	  else if(Nx == "N80") sequence_ok = check_sequence2(idx,data[idx]);
-	  else if(Nx == "N90") sequence_ok = check_sequence3(idx,data[idx]);
+	  if(iFlag == "1st")sequence_ok = check_sequence_drna(idx,data[idx]);
+	  else if(iFlag == "2nd") sequence_ok = check_sequence2(idx,data[idx]);
+	  else if(iFlag == "3rd") sequence_ok = check_sequence3(idx,data[idx]);
 	}
 	if(sequence_ok)
 	{
@@ -426,7 +431,7 @@ void get_seudo_reference()
 	        i2=seq.length();
 	        info.append(dataid[idx]);
 	    	info.append("_"+to_string(i1)+"_"+to_string(i2)+"-");
-		out2<<"seudo_"<<seudo_idx<<" "<<dataID_detailedID_map[ dataid[idx] ]<<" : "<<i1<<" "<<i2<<endl;
+		out2<<"pseudo_"<<seudo_idx<<" "<<dataID_detailedID_map[ dataid[idx] ]<<" : "<<i1<<" "<<i2<<endl;
 		i1=seq.length();
 		current_ref_idx++;
 	}
@@ -441,26 +446,26 @@ int main(int argc,char*argv[])
 {
     if(argc == 1) {
         cout<<"-"<<endl;
-        cout<<"This is a simple program to get the seudo reference from a fasta(or fastq) file."<<endl;
-        cout<<"./exe reads.fasta fa(or fq for .fastq file) Nx(e.g. N10) flag(dran or cdna)"<<endl;
-        cout<<"Two files will be generated: seudoNx.fasta and reads_in_seudoRefNx"<<endl;
+        cout<<"This is a simple program to get the pseudo reference from a fasta(or fastq) file."<<endl;
+        cout<<"./exe reads.fasta fa(or fq for .fastq file) iFlag(e.g. 1st,2nd,3rd,4th..) flag(dran or cdna) outputdir"<<endl;
+        cout<<"Two files will be generated: pseudo-iFlag.fasta and reads_in_pseudo.info"<<endl;
         cout<<"-"<<endl;
         return 0;
     }
     string filetype=argv[2];
+    iFlag = argv[3];
+    set();
+
+    seqFlag = argv[4];
+    output_dir=argv[5];
+
+    if(seqFlag == "dRNA") DS_MODE = false;
+    else if(seqFlag == "cDNA") DS_MODE = true;
 
     if(filetype == "fq")
 	load_data_fastq(argv[1]);
     else if(filetype == "fa")
 	load_data_fasta(argv[1]);
-    Nx = argv[3];
-    seqFlag = argv[4];
-    output_dir=argv[5];
-    if(seqFlag == "dRNA") DS_MODE = false;
-    else if(seqFlag == "cDNA") DS_MODE = true;
 
-
-    double x = atof(Nx.substr(1).c_str());
-    N = (1.0*x)/100.0;
     get_seudo_reference();
 }

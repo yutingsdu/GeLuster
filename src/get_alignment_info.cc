@@ -270,7 +270,7 @@ int waitForData(BundleData* bundles);
 TInputFiles bamreader;
 
 int main(int argc, char* argv[]) {
-	cout<<"Begin getting read-to-seudoRef alignment..."<<endl;
+	//cout<<"Begin getting read-to-seudoRef alignment..."<<endl;
 	bamreader.Add(argv[1]);
 	outReadInfo.open(argv[2]);
 	outReadInfo<<"read_id chromosome strand start_pos end_pos alignment_flag"<<endl;

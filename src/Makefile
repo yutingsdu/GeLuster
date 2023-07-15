@@ -140,10 +140,10 @@ endif
 
 OBJS += rlink.o tablemaker.o tmerge.o common.o
 
-all release static debug: get_alignment_info${EXE} PseudoRef${EXE} get_cluster${EXE} get_cluster_post${EXE}
-memcheck memdebug tsan tcheck thrcheck: get_alignment_info${EXE} PseudoRef${EXE} get_cluster${EXE} get_cluster_post${EXE}
-memuse memusage memtrace: get_alignment_info${EXE} PseudoRef${EXE} get_cluster${EXE} get_cluster_post${EXE}
-nothreads: get_alignment_info${EXE} PseudoRef${EXE} get_cluster${EXE} get_cluster_post${EXE}
+all release static debug: get_alignment_info${EXE} PseudoRef${EXE} get_cluster${EXE} FinalCluster${EXE}
+memcheck memdebug tsan tcheck thrcheck: get_alignment_info${EXE} PseudoRef${EXE} get_cluster${EXE} FinalCluster${EXE}
+memuse memusage memtrace: get_alignment_info${EXE} PseudoRef${EXE} get_cluster${EXE} FinalCluster${EXE}
+nothreads: get_alignment_info${EXE} PseudoRef${EXE} get_cluster${EXE} FinalCluster${EXE}
 
 ${GDIR}/GBam.o : $(GDIR)/GBam.h
 get_alignment_info.o : $(GDIR)/GBitVec.h $(GDIR)/GHash.hh $(GDIR)/GBam.h
@@ -166,7 +166,7 @@ get_cluster: get_cluster.o
 	${LINKER} ${LDFLAGS} -o $@ ${filter-out %.a %.so, $^} ${LIBS}
 	@echo
 	${DBG_WARN}
-get_cluster_post: get_cluster.o
+FinalCluster: FinalCluster.o
 	${LINKER} ${LDFLAGS} -o $@ ${filter-out %.a %.so, $^} ${LIBS}
 	@echo
 	${DBG_WARN}
@@ -178,9 +178,11 @@ test demo tests: get_alignment_info${EXE}
 
 #	echo $(PATH)
 clean:
-	${RM} get_alignment_info${EXE} get_alignment_info.o* PseudoRef${EXE} PseudoRef.o* get_cluster${EXE} get_cluster.o*  get_cluster_post${EXE} get_cluster_post.o* $(OBJS)
+	${RM} get_alignment_info${EXE} get_alignment_info.o* PseudoRef${EXE} PseudoRef.o* get_cluster${EXE} get_cluster.o*  FinalCluster${EXE} FinalCluster.o* $(OBJS)
 	${RM} core.*
+	${RM} utility.o FinalCluster.o
 allclean cleanAll cleanall:
 	cd ${BAM} && make clean
-	${RM} get_alignment_info${EXE} get_alignment_info.o* PseudoRef${EXE} PseudoRef.o* get_cluster${EXE} get_cluster.o*  get_cluster_post${EXE} get_cluster_post.o* $(OBJS)
+	${RM} get_alignment_info${EXE} get_alignment_info.o* PseudoRef${EXE} PseudoRef.o* get_cluster${EXE} get_cluster.o*  FinalCluster${EXE} FinalCluster.o* $(OBJS)
 	${RM} core.*
+	${RM} utility.o
