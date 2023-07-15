@@ -4,6 +4,9 @@ output_dir="geluster_outdir"
 temp_dir="tempDir"
 reads="No_input"
 seqType="cDNA"
+readsFormat="fq"
+itrnum=3
+tempCluster=""
 usage()
 {
 cat << EOT
@@ -21,17 +24,23 @@ GeLuster v.1.0 usage:
 
 --help/-h			  : Output GeLuster Help Information.
 
---version/-v			  : Print current version of TransMeta.
+--version/-v			  : Print current version of GeLuster.
 
---output_dir/-o <string>	  : Output path, default: transmeta_outdir.
+--iteration/-i <int>		  : Number of GeLuster iterations ([3,9], default: 3).
+
+--seqType/-s <string>		  : dRNA for direct RNA (default:cDNA).
+
+--rform/-f <string>		  : fa for .fasta(.fa) format, fq for .fastq(.fq) format (default: fq).
+
+--output_dir/-o <string>	  : Output path, default: geluster_outdir.
 
 ---------------------------------------------------------------------------
 
 ** Typical commands **
 
-A typical TransMeta command for paired-end data might be:
+A typical GeLuster command might be:
 
-  GeLuster -r reads.fastq -o geluster_outdir
+  GeLuster -r reads.fastq -f fq -s cDNA -o geluster_outdir
 
 ===========================================================================
 EOT
@@ -39,10 +48,10 @@ EOT
 #usage
 
 # parse options:
-RET=`getopt -o hvr:o: \
---long help,version,reads:,output_dir:\
+RET=`getopt -o hvr:o:i:s:f: \
+--long help,version,reads:,output_dir:,\
+iteration:,seqType:,format:\
   -n ' * ERROR' -- "$@"`
-
 
 # Note the quotes around $RET: they are essential!
 eval set -- "$RET"
@@ -53,14 +62,18 @@ while true; do
         -v | --version ) echo "** The current version of GeCluster is v.1.0 **"; exit 1;;
         -o | --output_dir) output_dir=$2     
 			shift 2 ;;
-        -r | --reads) 	   reads=$2 
+        -r | --reads) reads=$2 
+			shift 2 ;;
+        -i | --iteration) itrnum=$2 
+			shift 2 ;;
+        -s | --seqType) seqType=$2 
+			shift 2 ;;
+        -f | --rform) readsformat=$2 
 			shift 2 ;;
         -- ) shift; break ;;
         * ) echoerror "internal error!" ; exit 1 ;;
      esac
 done
-
-#echo $coverage $individual_coverage $annotation
 
 if [ $reads == "No_input" ]; then
          echo "    "
@@ -73,8 +86,96 @@ if [ ! -e $reads ];then
         echo " ** Error: reads file is not exist! **"
         exit 1
 fi
+geluster_run_1st()
+{
+    tempDir=$output_dir/$temp_dir
+    log=$output_dir/geluster.log
+
+    iFlag=$1
+    query=$reads
+
+    MyDate=$(date "+%d/%m/%Y %T")
+    echo "[$MyDate] $shellpath/src/PseudoRef $query $readsformat $iFlag $seqType $tempDir" >$log
+    $shellpath/src/PseudoRef $query $readsformat $iFlag $seqType $tempDir
+    ref=$tempDir/$iFlag".pseudo.fasta"
+
+    prefix=$tempDir/$iFlag".pseudo"
+
+    MyDate=$(date "+%d/%m/%Y %T")
+    echo "[$MyDate] minimap2 -ax splice -k 11 $ref $query > $prefix.sam" >>$log
+    minimap2 -ax splice -k 11 $ref $query > $prefix.sam 2>>$log
+    samtools sort  -o $prefix.bam $prefix.sam 2>>$log
+
+    MyDate=$(date "+%d/%m/%Y %T")
+    echo "[$MyDate] $shellpath/src/get_alignment_info $prefix".bam" $tempDir/$iFlag".alignment.info" ">>$log
+    $shellpath/src/get_alignment_info $prefix".bam" $tempDir/$iFlag".alignment.info" 
+
+
+    query2=$tempDir/$iFlag".pseudo.fasta"
+    prefix=$tempDir/$iFlag".pseudo-self"
+    if [ $seqType == "cDNA" ]; then
+	MyDate=$(date "+%d/%m/%Y %T")
+        echo "[$MyDate] minimap2 -ax splice -k 11 -X -N 1 $ref $query2 > $prefix.sam" >>$log
+        minimap2 -ax splice -k 11 -X -N 1 $ref $query2 > $prefix.sam 2>>$log
+    	samtools sort  -o $prefix.bam $prefix.sam 2>>$log
+
+	MyDate=$(date "+%d/%m/%Y %T")
+    	echo "[$MyDate] $shellpath/src/get_alignment_info $prefix".bam" $tempDir/$iFlag".self.alignment.info"">>$log
+    	$shellpath/src/get_alignment_info $prefix".bam" $tempDir/$iFlag".self.alignment.info" 
+    fi
+
+    MyDate=$(date "+%d/%m/%Y %T")
+    echo "[$MyDate] $shellpath/src/get_cluster $query $readsformat $tempDir/$iFlag".pseudoref-reads.info" $tempDir/$iFlag".alignment.info" $tempDir/$iFlag".self.alignment.info" $iFlag $seqType $tempDir" >>$log
+    $shellpath/src/get_cluster $query $readsformat $tempDir/$iFlag".pseudoref-reads.info" $tempDir/$iFlag".alignment.info" $tempDir/$iFlag".self.alignment.info" $iFlag $seqType $tempDir
+    tempCluster="$tempCluster $tempDir/$iFlag.myCluster_multi.tsv"
+}
+geluster_run_iteration()
+{
+    tempDir=$output_dir/$temp_dir
+    log=$output_dir/geluster.log
+
+    iFlag=$1
+    iFlag_pre=$2
+    query=$tempDir/$iFlag_pre.singleton.fasta
+
+    MyDate=$(date "+%d/%m/%Y %T")
+    echo " " >>$log
+    echo "[$MyDate] $shellpath/src/PseudoRef $query fa $iFlag $seqType $tempDir" >>$log
+    $shellpath/src/PseudoRef $query fa $iFlag $seqType $tempDir 
+    ref=$tempDir/$iFlag".pseudo.fasta"
+
+    prefix=$tempDir/$iFlag".pseudo"
+
+    MyDate=$(date "+%d/%m/%Y %T")
+    echo "[$MyDate] minimap2 -ax splice -k 11 $ref $query > $prefix.sam  2>>$log" >>$log
+    minimap2 -ax splice -k 11 $ref $query > $prefix.sam  2>>$log
+    samtools sort  -o $prefix.bam $prefix.sam 2>>$log
+
+    MyDate=$(date "+%d/%m/%Y %T")
+    echo "[$MyDate] $shellpath/src/get_alignment_info $prefix".bam" $tempDir/$iFlag".alignment.info" " >>$log
+    $shellpath/src/get_alignment_info $prefix".bam" $tempDir/$iFlag".alignment.info" 
+
+    query2=$tempDir/$iFlag".pseudo.fasta"
+    prefix=$tempDir/$iFlag".pseudo-self"
+    if [ $seqType == "cDNA" ]; then
+      MyDate=$(date "+%d/%m/%Y %T")
+      echo "[$MyDate] minimap2 -ax splice -k 11 -X -N 1 $ref $query2 > $prefix.sam 2>>$log" >>$log
+      minimap2 -ax splice -k 11 -X -N 1 $ref $query2 > $prefix.sam 2>>$log
+      samtools sort  -o $prefix.bam $prefix.sam 2>>$log
+
+      MyDate=$(date "+%d/%m/%Y %T")
+      echo "[$MyDate] $shellpath/src/get_alignment_info $prefix".bam" $tempDir/$iFlag".self.alignment.info" " >>$log
+      $shellpath/src/get_alignment_info $prefix".bam" $tempDir/$iFlag".self.alignment.info" 
+    fi
+
+    MyDate=$(date "+%d/%m/%Y %T")
+    echo "[$MyDate] $shellpath/src/get_cluster $query fa $tempDir/$iFlag".pseudoref-reads.info" $tempDir/$iFlag".alignment.info" $tempDir/$iFlag".self.alignment.info" $iFlag $seqType $tempDir" >>$log
+    $shellpath/src/get_cluster $query fa $tempDir/$iFlag".pseudoref-reads.info" $tempDir/$iFlag".alignment.info" $tempDir/$iFlag".self.alignment.info" $iFlag $seqType $tempDir
+    tempCluster="$tempCluster $tempDir/$iFlag.myCluster_multi.tsv"
+}
 
 MyDate=$(date "+%d/%m/%Y %T")
+echo "[$MyDate] Running..."
 if [ ! -x "$output_dir" ]; then  
     mkdir -p $output_dir/$temp_dir
 else 
@@ -82,77 +183,26 @@ else
     rm -rf $output_dir
     mkdir -p $output_dir/$temp_dir
 fi
-########################################=======================================================
-tempDir=$output_dir/$temp_dir
-Nx=N60
-query=$reads
-$shellpath/src/PseudoRef $query fq $Nx $seqType $tempDir
-
-ref=$tempDir/$Nx".seudo.fasta"
-prefix=$tempDir/$Nx".seudo"
-minimap2 -ax splice -k 11 $ref $query > $prefix.sam
-samtools sort  -o $prefix.bam $prefix.sam
-$shellpath/src/get_alignment_info $prefix".bam" $tempDir/$Nx".alignment.info" 
-
-
-query2=$tempDir/$Nx".seudo.fasta"
-prefix=$tempDir/$Nx".seudo-self"
-
-minimap2 -ax splice -k 11 -X -N 1 $ref $query2 > $prefix.sam
-samtools sort  -o $prefix.bam $prefix.sam
-$shellpath/src/get_alignment_info $prefix".bam" $tempDir/$Nx".self.alignment.info" 
-
-$shellpath/src/get_cluster $query fq $tempDir/$Nx".seudoref-reads.info" $tempDir/$Nx".alignment.info" $tempDir/$Nx".self.alignment.info" $Nx $tempDir
 
 ########################################=======================================================
-Nx=N80
-
-ref=$tempDir/$Nx".seudo.fasta"
-query=$tempDir/N60.singleton.fasta
-
-$shellpath/src/PseudoRef $query fa $Nx $seqType $tempDir 
-
-prefix=$tempDir/$Nx".seudo"
-
-minimap2 -ax splice -k 11 $ref $query > $prefix.sam 
-samtools sort  -o $prefix.bam $prefix.sam
-$shellpath/src/get_alignment_info $prefix".bam" $tempDir/$Nx".alignment.info" 
-
-query2=$tempDir/$Nx".seudo.fasta"
-prefix=$tempDir/$Nx".seudo-self"
-
-minimap2 -ax splice -k 11 -X -N 1 $ref $query2 > $tempDir/$prefix.sam
-samtools sort  -o $prefix.bam $prefix.sam
-$shellpath/src/get_alignment_info $prefix".bam" $tempDir/$Nx".self.alignment.info" 
-
-$shellpath/src/get_cluster $query fa $tempDir/$Nx".seudoref-reads.info" $tempDir/$Nx".alignment.info" $tempDir/$Nx".self.alignment.info" $Nx $tempDir
-########################################=======================================================
-Nx=N90
-
-ref=$tempDir/$Nx".seudo.fasta"
-query=$tempDir/N80.singleton.fasta
-
-$shellpath/src/PseudoRef $query fa $Nx $seqType $tempDir 
-
-prefix=$tempDir/$Nx".seudo"
-
-minimap2 -ax splice -k 11 $ref $query > $prefix.sam 
-samtools sort  -o $prefix.bam $prefix.sam
-$shellpath/src/get_alignment_info $prefix".bam" $tempDir/$Nx".alignment.info" 
-
-query2=$tempDir/$Nx".seudo.fasta"
-prefix=$tempDir/$Nx".seudo-self"
-
-minimap2 -ax splice -k 11 -X -N 1 $ref $query2 > $tempDir/$prefix.sam
-samtools sort  -o $prefix.bam $prefix.sam
-$shellpath/src/get_alignment_info $prefix".bam" $tempDir/$Nx".self.alignment.info" 
-
-$shellpath/src/get_cluster $query fa $tempDir/$Nx".seudoref-reads.info" $tempDir/$Nx".alignment.info" $tempDir/$Nx".self.alignment.info" $Nx $tempDir
-
-cat $output_dir/$temp_dir/N60.myCluster_multi.tsv $output_dir/$temp_dir/N80.myCluster_multi.tsv $output_dir/$temp_dir/N90.myCluster_multi.tsv >$output_dir/GeLuster.tsv
-########################################=======================================================
+MyDate=$(date "+%d/%m/%Y %T")
+echo "[$MyDate] First iteration..."
+geluster_run_1st "1st"
 
 MyDate=$(date "+%d/%m/%Y %T")
-echo "[$MyDate] Congratulations."
+echo "[$MyDate] Second iteration..."
+geluster_run_iteration "2nd" "1st"
 
+MyDate=$(date "+%d/%m/%Y %T")
+echo "[$MyDate] Third iteration..."
+geluster_run_iteration "3rd" "2nd"
+########################################=======================================================
+MyDate=$(date "+%d/%m/%Y %T")
+echo " ">>$log
+echo "[$MyDate] $shellpath/src/FinalCluster $tempCluster $output_dir"/GeCluster.tsv"" >>$log
+$shellpath/src/FinalCluster $tempCluster $output_dir"/GeCluster.tsv"
 
+MyDate=$(date "+%d/%m/%Y %T")
+echo " ">>$log
+echo "[$MyDate] Done, clustering results is written to "$output_dir"/GeCluster.tsv!" >>$log
+echo "[$MyDate] Done, clustering results is written to "$output_dir"/GeCluster.tsv!"
