@@ -7,16 +7,14 @@ GeLuster is a fast and accurate tool for clustering long-read transcriptomic dat
 It is free to use, modify, redistribute without any restrictions, except including the license provided with the distribution.
 
 
-Installation
+Prerequisites
 ================
 
-Prerequisites
-
- g++ with support for C++11 (e.g. 4.7.2)
+#g++ with support for C++11 (e.g. 4.7.2)
  
- minimap2 (In the GeLuster paper we tested with version 2.24-r1122) 
+#minimap2 (In the GeLuster paper we tested with version 2.24-r1122) 
  
- samtools 
+#samtools 
 
 # 1. Installing and test
 ===========================================================================
@@ -79,9 +77,9 @@ Prerequisites
 
 
 Authors: Ting Yu and Junchi Ma designed and wrote GeLuster.
-
+ 
 Contact:
-
+ 
 Any questions, problems, bugs are welcome and should be dumped to Ting Yu <yutingsdu@163.com>
  
 Created on July 15, 2023.
