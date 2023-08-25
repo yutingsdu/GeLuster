@@ -39,7 +39,7 @@ Prerequisites
         
           $ ./run_me.sh
           
-        If you get the geluster_outdir/GeLuster.tsv, you have succesfully installed GeLuster.
+        If you get the geluster_outdir/GeLuster.tsv, congrats, you succesfully installed GeLuster.
       
         
 ===========================================================================
