@@ -10,11 +10,11 @@ It is free to use, modify, redistribute without any restrictions, except includi
 Prerequisites
 ================
 
-#g++ with support for C++11 (e.g. 4.7.2)
+  g++ with support for C++11 (e.g. 4.7.2)
  
-#minimap2 (In the GeLuster paper we tested with version 2.24-r1122) 
+  minimap2 (In the GeLuster paper we tested with version 2.24-r1122) 
  
-#samtools 
+  samtools 
 
 # 1. Installing and test
 ===========================================================================
