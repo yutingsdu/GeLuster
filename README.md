@@ -2,9 +2,7 @@
 Description
 ================
 
-GeLuster is a fast and accurate tool for clustering long-read transcriptomic data.
-
-It is free to use, modify, redistribute without any restrictions, except including the license provided with the distribution.
+GeLuster is a highly efficient tool for clustering long-read transcriptomic data.
 
 
 Prerequisites
@@ -14,7 +12,7 @@ Prerequisites
  
   [minimap2][minimap] (In the GeLuster paper we tested with version 2.24-r1122)
   
-  [samtool][samtools] (In the GeLuster paper we tested with version 1.10)
+  [samtools][samtools] (In the GeLuster paper we tested with version 1.10)
 
 # 1. Installing and test
 ===========================================================================
