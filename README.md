@@ -52,6 +52,7 @@ Prerequisites
 ---------------------------------------------------------------------------
 
     ** Options **
+    
     --help/-h			  : Output GeLuster Help Information.
 
     --version/-v			  : Print current version of GeLuster.
@@ -64,7 +65,6 @@ Prerequisites
 
     --output_dir/-o <string>	  : Output path, default: geluster_outdir.
 
-
 ---------------------------------------------------------------------------
 
     ** Typical commands **
@@ -72,8 +72,6 @@ Prerequisites
     A typical GeLuster command might be:
 
     GeLuster -r reads.fastq -f fq -s cDNA -o geluster_outdir
-
-
 
 ---------------------------------------------------------------------------
 
@@ -83,7 +81,8 @@ Prerequisites
 Authors: Ting Yu and Junchi Ma designed and wrote GeLuster.
 
 Contact:
- Any questions, problems, bugs are welcome and should be dumped to
- Ting Yu <yutingsdu@163.com>
- Created on July 15, 2023.
+
+Any questions, problems, bugs are welcome and should be dumped to Ting Yu <yutingsdu@163.com>
+ 
+Created on July 15, 2023.
 
