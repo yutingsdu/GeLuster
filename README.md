@@ -28,12 +28,19 @@ Prerequisites
      
         e.g. export PATH=/home/yuting/minimap2/:$PATH
         
-    (B) Change to the GeLuster/src directory and make
+    (B) Change to the GeLuster/src directory and make.
     
           $ cd src
           $ make release
           
     (C) Test GeLuster on a demo data set.
+        
+        Change to GeLuster/sample_test/, and type the following command:
+        
+          $ ./run_me.sh
+          
+        If you get the geluster_outdir/GeLuster.tsv, you have succesfully installed GeLuster.
+      
         
 ===========================================================================
 
