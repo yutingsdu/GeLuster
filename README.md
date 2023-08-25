@@ -12,8 +12,8 @@ Prerequisites
 
   g++ with support for C++11 (e.g. 4.7.2)
  
-  minimap2 (In the GeLuster paper we tested with version 2.24-r1122) 
- 
+  [minimap2][minimap] (In the GeLuster paper we tested with version 2.24-r1122)
+  
   samtools 
 
 # 1. Installing and test
@@ -84,3 +84,5 @@ Any questions, problems, bugs are welcome and should be dumped to Ting Yu <yutin
  
 Created on July 15, 2023.
 
+ [minimap]: https://github.com/lh3/minimap
+ 
