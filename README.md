@@ -18,19 +18,27 @@ Prerequisites
  
  samtools 
 
-# 1. Installing 
+# 1. Installing and test
 ===========================================================================
     
-    (A) Please make sure that minimap2 and samtools are correctly installed, and set environment variables. 
-      
-    Type the commands when using GeLuster:
+    (A) Please ensure that minimap2 and samtools are properly installed. 
+        
+        Set the environment variables or type the commands when using GeLuster:
 
-       $ export PATH=/path_to_minimap2/:$PATH
-       $ export PATH=/path_to_samtools/:$PATH
+          $ export PATH=/path_to_minimap2/:$PATH
+          $ export PATH=/path_to_samtools/:$PATH
 
-     Please change path_to_minimap2(path_to_samtools) to the directory of minimap2(samtools).
+        Please change path_to_minimap2(path_to_samtools) to the directory of minimap2(samtools).
      
-     e.g. export PATH=/home/yuting/minimap2/:$PATH
+        e.g. export PATH=/home/yuting/minimap2/:$PATH
+        
+    (B) Change to the GeLuster/src directory and make
+    
+          $ cd src
+          $ make release
+          
+    (C) Test GeLuster on a demo data set.
+        
 ===========================================================================
 
 # 2. Usage 
