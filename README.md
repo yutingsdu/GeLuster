@@ -14,7 +14,7 @@ Prerequisites
  
   [minimap2][minimap] (In the GeLuster paper we tested with version 2.24-r1122)
   
-  samtools 
+  [samtool][samtools] (In the GeLuster paper we tested with version 1.10)
 
 # 1. Installing and test
 ===========================================================================
@@ -84,5 +84,6 @@ Any questions, problems, bugs are welcome and should be dumped to Ting Yu <yutin
  
 Created on July 15, 2023.
 
- [minimap]: https://github.com/lh3/minimap
+ [minimap]: https://github.com/lh3/minimap2/releases
+ [samtools]: https://github.com/samtools/samtools/releases
  
