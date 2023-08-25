@@ -20,17 +20,17 @@ Prerequisites
 
 # 1. Installing 
 ===========================================================================
-  (A)  Please make sure that minimap2 and samtools are correctly installed, and set environment variables. 
+    
+    (A) Please make sure that minimap2 and samtools are correctly installed, and set environment variables. 
       
-     Just type the commands when using GeLuster:
+    Type the commands when using GeLuster:
 
        $ export PATH=/path_to_minimap2/:$PATH
        $ export PATH=/path_to_samtools/:$PATH
 
      Please change path_to_minimap2(path_to_samtools) to the directory of minimap2(samtools).
      
-    e.g.
-          export PATH=/home/yuting/minimap2/:$PATH
+     e.g. export PATH=/home/yuting/minimap2/:$PATH
 ===========================================================================
 
 # 2. Usage 
