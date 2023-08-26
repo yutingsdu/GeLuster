@@ -59,7 +59,7 @@ eval set -- "$RET"
 while true; do
     case "$1" in
         -h | --help ) usage; exit 1;;
-        -v | --version ) echo "** The current version of GeCluster is v.1.0 **"; exit 1;;
+        -v | --version ) echo "** The current version of GeLuster is v.1.0 **"; exit 1;;
         -o | --output_dir) output_dir=$2     
 			shift 2 ;;
         -r | --reads) reads=$2 
@@ -199,10 +199,10 @@ geluster_run_iteration "3rd" "2nd"
 ########################################=======================================================
 MyDate=$(date "+%d/%m/%Y %T")
 echo " ">>$log
-echo "[$MyDate] $shellpath/src/FinalCluster $tempCluster $output_dir"/GeCluster.tsv"" >>$log
-$shellpath/src/FinalCluster $tempCluster $output_dir"/GeCluster.tsv"
+echo "[$MyDate] $shellpath/src/FinalCluster $tempCluster $output_dir"/GeLuster.tsv"" >>$log
+$shellpath/src/FinalCluster $tempCluster $output_dir"/GeLuster.tsv"
 
 MyDate=$(date "+%d/%m/%Y %T")
 echo " ">>$log
-echo "[$MyDate] Done, clustering results is written to "$output_dir"/GeCluster.tsv!" >>$log
-echo "[$MyDate] Done, clustering results is written to "$output_dir"/GeCluster.tsv!"
+echo "[$MyDate] Done, clustering results is written to "$output_dir"/GeLuster.tsv!" >>$log
+echo "[$MyDate] Done, clustering results is written to "$output_dir"/GeLuster.tsv!"
