@@ -26,7 +26,7 @@ Prerequisites
 
         Please change path_to_minimap2(path_to_samtools) to the directory of minimap2(samtools).
      
-        e.g. export PATH=/home/yuting/minimap2/:$PATH
+        e.g. export PATH=/home/yuting/minimap2-2.24/:$PATH
         
     (B) Change to the GeLuster/src directory and make.
     
