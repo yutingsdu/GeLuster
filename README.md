@@ -70,7 +70,7 @@ Prerequisites
 
 ---------------------------------------------------------------------------
 
-    ** Typical commands **
+    ** Typical Command **
     
     A typical GeLuster command might be:
 
