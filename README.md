@@ -33,7 +33,7 @@ Prerequisites
           $ cd src
           $ make release
           
-    (C) Test GeLuster on a demo data set.
+    (C) Test GeLuster on the demo data set.
         
         Change to GeLuster/sample_test/, and type the following command:
         
