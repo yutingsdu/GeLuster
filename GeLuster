@@ -4,7 +4,7 @@ output_dir="geluster_outdir"
 temp_dir="tempDir"
 reads="No_input"
 seqType="cDNA"
-readsFormat="fq"
+readsformat="fq"
 itrnum=3
 tempCluster=""
 usage()
