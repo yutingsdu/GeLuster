@@ -56,21 +56,21 @@ Prerequisites
 
     ** Options **
     
-    --help/-h			  : Output GeLuster Help Information.
+    --help/-h               : Output GeLuster Help Information.
 
-    --version/-v			  : Print current version of GeLuster.
+    --version/-v            : Print current version of GeLuster.
 
-    --iteration/-i <int>		  : Number of GeLuster iterations ([3,9], default: 3).
+    --iteration/-i <int>    : Number of GeLuster iterations ([3,9], default: 3).
 
-    --seqType/-s <string>         : 'cDNA' for ONT cDNA data, 'dRNA' for ONT direct RNA data, or 'PacBio' for pacbio data (default:cDNA).
+    --seqType/-s <string>   : 'cDNA' for ONT cDNA data, 'dRNA' for ONT direct RNA data, or 'PacBio' for pacbio data (default:cDNA).
 
-    --rform/-f <string>          : 'fq' for FASTQ format reads, 'fa' for FASTA format reads (default: fq).
+    --rform/-f <string>     : 'fq' for FASTQ format reads, 'fa' for FASTA format reads (default: fq).
    
-    --threads/-t <int>           : Number of threads to be used (default: 10).
+    --threads/-t <int>      : Number of threads to be used (default: 10).
 
-    --multi/-M            : To generate a proxy of gene expression matrix for multiple RNA-seq samples. Input files should be separated by commas.
+    --multi/-M              : To generate a proxy of gene expression matrix for multiple RNA-seq samples. Input files should be separated by commas.
 
-    --output_dir/-o <string>	  : Output path, default: geluster_outdir.
+    --output_dir/-o <string>: Output path, default: geluster_outdir.
 
 ---------------------------------------------------------------------------
 
