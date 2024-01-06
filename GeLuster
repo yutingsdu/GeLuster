@@ -5,34 +5,40 @@ temp_dir="tempDir"
 reads="No_input"
 seqType="cDNA"
 readsformat="fq"
+Mflag=0
 itrnum=3
+threads=10
 tempCluster=""
 usage()
 {
 cat << EOT
 ===========================================================================
 
-GeLuster v.1.0 usage:
+GeLuster  usage:
 
 ** Required **
 
---reads/-r <string>		: path to the read file
+--reads/-r <string>	 : path to the read file
 
 ---------------------------------------------------------------------------
 
 ** Options **
 
---help/-h			  : Output GeLuster Help Information.
+--help/-h		  : Output GeLuster Help Information.
 
---version/-v			  : Print current version of GeLuster.
+--version/-v		  : Print current version of GeLuster.
 
---iteration/-i <int>		  : Number of GeLuster iterations ([3,9], default: 3).
+--iteration/-i <int>	  : Number of GeLuster iterations ([3,9], default: 3).
 
---seqType/-s <string>		  : dRNA for direct RNA (default:cDNA).
+--seqType/-s <string>	  : 'cDNA' for ONT cDNA data, 'dRNA' for ONT direct RNA data, or 'PacBio' for pacbio data (default:cDNA).
 
---rform/-f <string>		  : fa for .fasta(.fa) format, fq for .fastq(.fq) format (default: fq).
+--rform/-f <string>	  : 'fq' for FASTQ format reads, 'fa' for FASTA format reads (default: fq).
 
---output_dir/-o <string>	  : Output path, default: geluster_outdir.
+--threads/-t <int> 	  : Number of threads to be used (default: 10).
+
+--multi/-M 		  : To generate a proxy of gene expression matrix for multiple RNA-seq samples. Input files should be separated by commas.
+
+--output_dir/-o <string>  : Output path, default: geluster_outdir.
 
 ---------------------------------------------------------------------------
 
@@ -40,7 +46,7 @@ GeLuster v.1.0 usage:
 
 A typical GeLuster command might be:
 
-  GeLuster -r reads.fastq -f fq -s cDNA -o geluster_outdir
+  GeLuster -r reads.fastq -f fq -s cDNA -o geluster_outdir 
 
 ===========================================================================
 EOT
@@ -48,9 +54,10 @@ EOT
 #usage
 
 # parse options:
-RET=`getopt -o hvr:o:i:s:f: \
+RET=`getopt -o hvr:o:i:s:f:Mt: \
 --long help,version,reads:,output_dir:,\
-iteration:,seqType:,format:\
+iteration:,seqType:,format:,\
+multi,threads:\
   -n ' * ERROR' -- "$@"`
 
 # Note the quotes around $RET: they are essential!
@@ -59,8 +66,12 @@ eval set -- "$RET"
 while true; do
     case "$1" in
         -h | --help ) usage; exit 1;;
-        -v | --version ) echo "** The current version of GeLuster is v.1.0 **"; exit 1;;
+        -v | --version ) echo "** The current version of GeLuster is  v.1.1 **"; exit 1;;
+	-M | --multi ) Mflag=1
+			shift 1 ;;
         -o | --output_dir) output_dir=$2     
+			shift 2 ;;
+        -t | --threads) threads=$2     
 			shift 2 ;;
         -r | --reads) reads=$2 
 			shift 2 ;;
@@ -75,6 +86,8 @@ while true; do
      esac
 done
 
+#echo $Mflag $reads $itrnum $seqType $readsformat
+
 if [ $reads == "No_input" ]; then
          echo "    "
          echo "[Error] : Reads file is not provided!"
@@ -82,7 +95,8 @@ if [ $reads == "No_input" ]; then
 	 usage
          exit 1
 fi
-if [ ! -e $reads ];then
+
+if [ $Mflag == 0 ] && [ ! -e $reads ]; then
         echo " ** Error: reads file is not exist! **"
         exit 1
 fi
@@ -102,9 +116,9 @@ geluster_run_1st()
     prefix=$tempDir/$iFlag".pseudo"
 
     MyDate=$(date "+%d/%m/%Y %T")
-    echo "[$MyDate] minimap2 -ax splice -k 11 $ref $query > $prefix.sam" >>$log
-    minimap2 -ax splice -k 11 $ref $query > $prefix.sam 2>>$log
-    samtools sort  -o $prefix.bam $prefix.sam 2>>$log
+    echo "[$MyDate] minimap2 -t $threads -ax splice -k 11 $ref $query > $prefix.sam" >>$log
+    minimap2 -t $threads -ax splice -k 11 $ref $query > $prefix.sam 2>>$log
+    samtools sort --threads 10  -o $prefix.bam $prefix.sam 2>>$log
 
     MyDate=$(date "+%d/%m/%Y %T")
     echo "[$MyDate] $shellpath/src/get_alignment_info $prefix".bam" $tempDir/$iFlag".alignment.info" ">>$log
@@ -115,9 +129,9 @@ geluster_run_1st()
     prefix=$tempDir/$iFlag".pseudo-self"
     if [ $seqType == "cDNA" ]; then
 	MyDate=$(date "+%d/%m/%Y %T")
-        echo "[$MyDate] minimap2 -ax splice -k 11 -X -N 1 $ref $query2 > $prefix.sam" >>$log
-        minimap2 -ax splice -k 11 -X -N 1 $ref $query2 > $prefix.sam 2>>$log
-    	samtools sort  -o $prefix.bam $prefix.sam 2>>$log
+        echo "[$MyDate] minimap2 -t $threads -ax splice -k 11 -X -N 1 $ref $query2 > $prefix.sam" >>$log
+        minimap2 -t $threads -ax splice -k 11 -X -N 1 $ref $query2 > $prefix.sam 2>>$log
+    	samtools sort --threads 10 -o $prefix.bam $prefix.sam 2>>$log
 
 	MyDate=$(date "+%d/%m/%Y %T")
     	echo "[$MyDate] $shellpath/src/get_alignment_info $prefix".bam" $tempDir/$iFlag".self.alignment.info"">>$log
@@ -147,9 +161,9 @@ geluster_run_iteration()
     prefix=$tempDir/$iFlag".pseudo"
 
     MyDate=$(date "+%d/%m/%Y %T")
-    echo "[$MyDate] minimap2 -ax splice -k 11 $ref $query > $prefix.sam  2>>$log" >>$log
-    minimap2 -ax splice -k 11 $ref $query > $prefix.sam  2>>$log
-    samtools sort  -o $prefix.bam $prefix.sam 2>>$log
+    echo "[$MyDate] minimap2 -t $threads -ax splice -k 11 $ref $query > $prefix.sam  2>>$log" >>$log
+    minimap2 -t $threads -ax splice -k 11 $ref $query > $prefix.sam  2>>$log
+    samtools sort --threads 10 -o $prefix.bam $prefix.sam 2>>$log
 
     MyDate=$(date "+%d/%m/%Y %T")
     echo "[$MyDate] $shellpath/src/get_alignment_info $prefix".bam" $tempDir/$iFlag".alignment.info" " >>$log
@@ -159,9 +173,9 @@ geluster_run_iteration()
     prefix=$tempDir/$iFlag".pseudo-self"
     if [ $seqType == "cDNA" ]; then
       MyDate=$(date "+%d/%m/%Y %T")
-      echo "[$MyDate] minimap2 -ax splice -k 11 -X -N 1 $ref $query2 > $prefix.sam 2>>$log" >>$log
-      minimap2 -ax splice -k 11 -X -N 1 $ref $query2 > $prefix.sam 2>>$log
-      samtools sort  -o $prefix.bam $prefix.sam 2>>$log
+      echo "[$MyDate] minimap2 -t $threads -ax splice -k 11 -X -N 1 $ref $query2 > $prefix.sam 2>>$log" >>$log
+      minimap2 -t $threads -ax splice -k 11 -X -N 1 $ref $query2 > $prefix.sam 2>>$log
+      samtools sort --threads 10 -o $prefix.bam $prefix.sam 2>>$log
 
       MyDate=$(date "+%d/%m/%Y %T")
       echo "[$MyDate] $shellpath/src/get_alignment_info $prefix".bam" $tempDir/$iFlag".self.alignment.info" " >>$log
@@ -184,6 +198,12 @@ else
     mkdir -p $output_dir/$temp_dir
 fi
 
+if [ $Mflag == 1 ];then
+	multireads=$reads
+        echo "[$MyDate] [Warning] : You are using multi sample mode..."
+        $shellpath/src/MergeFiles $reads $output_dir/$temp_dir"/merged.fastq"
+	reads=$output_dir/$temp_dir"/merged.fastq"
+fi
 ########################################=======================================================
 MyDate=$(date "+%d/%m/%Y %T")
 echo "[$MyDate] First iteration..."
@@ -199,8 +219,9 @@ geluster_run_iteration "3rd" "2nd"
 ########################################=======================================================
 MyDate=$(date "+%d/%m/%Y %T")
 echo " ">>$log
-echo "[$MyDate] $shellpath/src/FinalCluster $tempCluster $output_dir"/GeLuster.tsv"" >>$log
-$shellpath/src/FinalCluster $tempCluster $output_dir"/GeLuster.tsv"
+mkdir -p $output_dir"/fastq_files"
+echo "[$MyDate] $shellpath/src/FinalCluster $tempCluster $output_dir"/" $Mflag $reads" >>$log
+$shellpath/src/FinalCluster $tempCluster $output_dir $Mflag $reads 
 
 MyDate=$(date "+%d/%m/%Y %T")
 echo " ">>$log
