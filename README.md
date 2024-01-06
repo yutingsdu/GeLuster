@@ -8,7 +8,7 @@ GeLuster is a highly efficient tool for clustering long-read transcriptomic data
 Prerequisites
 ================
 
-  g++ with support for C++11 (e.g. 4.7.2)
+  g++ with support for C++11 (e.g. 9.4.0)
  
   [minimap2][minimap] (In the GeLuster paper we tested with version 2.24-r1122)
   
