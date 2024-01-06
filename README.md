@@ -82,6 +82,7 @@ Prerequisites
 
 # 3. Input and Output 
 ===========================================================================
+  
   The GeLuster's input is long reads in FASTQ or FASTA format, e.g.,
     
     @SRR14181741.1 length=787
@@ -94,6 +95,7 @@ Prerequisites
     )$#%$%($%$$$*/1422++/04:334($'#$(($%('(&&98+#('&$&'''')$#'$$%')++...
 
 ---------------------------------------------------------------------------  
+  
   The output is a text file with one line per read.
   Each line specifies the name of the read and the cluster to which the read belongs, e.g.,
     
