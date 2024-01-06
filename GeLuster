@@ -14,7 +14,7 @@ usage()
 cat << EOT
 ===========================================================================
 
-GeLuster  usage:
+GeLuster usage:
 
 ** Required **
 
