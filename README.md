@@ -94,8 +94,8 @@ Prerequisites
     )$#%$%($%$$$*/1422++/04:334($'#$(($%('(&&98+#('&$&'''')$#'$$%')++...
 
 ---------------------------------------------------------------------------  
-    
-    The output is a text file with one line per read, specifies the name of the read and the cluster to which the read belongs, e.g.,
+    The output is a text file with one line per read.
+    Each line specifies the name of the read and the cluster to which the read belongs, e.g.,
     
     @SRR14181741.319454 length=598 ,gene_cluster_0
     @SRR14181741.811316 length=399 ,gene_cluster_0
