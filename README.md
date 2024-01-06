@@ -117,11 +117,9 @@ Prerequisites
     
 Authors: Ting Yu and Junchi Ma designed and wrote GeLuster.
  
-Contact:
+Contact: Any questions, problems, bugs are welcome and should be dumped to Ting Yu <yutingsdu@163.com>
  
-Any questions, problems, bugs are welcome and should be dumped to Ting Yu <yutingsdu@163.com>
- 
-Created on July 15, 2023.
+Updated on January 4, 2024.
 
  [minimap]: https://github.com/lh3/minimap2/releases
  [samtools]: https://github.com/samtools/samtools/releases
