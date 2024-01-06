@@ -80,7 +80,39 @@ Prerequisites
 
 ===========================================================================
 
+# 3. Input and Output 
+===========================================================================
+    The GeLuster's input is long reads in FASTQ or FASTA format, e.g.,
+    
+    @SRR14181741.1 length=787
+    GGTATTACTTCGTTCAGTTACGTATTGCTAAGGTTAACACAAAGACACCATTCTTTCTTCAGCA...
+    +SRR14181741.1 length=787
+    %%1+)+7<<3.)$'6(5'2,)/6,,/00203&9$-1-233JG209:3./$'&##$%&)(/,**+...
+    @SRR14181741.2 length=597
+    TGTTATGCACTTGTTCAGTTACGTATTACTAGGGTTAACACAAAGACACCATTTCATAACTTTCT...
+    +SRR14181741.2 length=597
+    )$#%$%($%$$$*/1422++/04:334($'#$(($%('(&&98+#('&$&'''')$#'$$%')++...
 
+---------------------------------------------------------------------------  
+    
+    The output is a text file with one line per read, specifies the name of the read and the cluster to which the read belongs, e.g.,
+    
+    @SRR14181741.319454 length=598 ,gene_cluster_0
+    @SRR14181741.811316 length=399 ,gene_cluster_0
+    @SRR14181741.929273 length=2216 ,gene_cluster_0
+    @SRR14181741.1036973 length=470 ,gene_cluster_0
+    @SRR14181741.354389 length=3828 ,gene_cluster_0
+    @SRR14181741.831192 length=469 ,gene_cluster_0
+    @SRR14181741.252153 length=317 ,gene_cluster_0
+    @SRR14181741.100390 length=1934 ,gene_cluster_1
+    @SRR14181741.1514937 length=783 ,gene_cluster_1
+    @SRR14181741.722422 length=793 ,gene_cluster_1
+    @SRR14181741.140922 length=2179 ,gene_cluster_1
+    @SRR14181741.543032 length=1002 ,gene_cluster_1
+    
+    
+===========================================================================
+    
 Authors: Ting Yu and Junchi Ma designed and wrote GeLuster.
  
 Contact:
