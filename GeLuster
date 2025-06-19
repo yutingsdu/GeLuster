@@ -100,6 +100,10 @@ if [ $Mflag == 0 ] && [ ! -e $reads ]; then
         echo " ** Error: reads file is not exist! **"
         exit 1
 fi
+if [ $itrnum -gt 9 ]; then
+	echo " ** Largest iterations number is 9! **"
+	exit 1
+fi
 geluster_run_1st()
 {
     tempDir=$output_dir/$temp_dir
@@ -216,6 +220,23 @@ geluster_run_iteration "2nd" "1st"
 MyDate=$(date "+%d/%m/%Y %T")
 echo "[$MyDate] Third iteration..."
 geluster_run_iteration "3rd" "2nd"
+
+#itrnum
+
+if [ $itrnum -gt 3 ]; then
+	MyDate=$(date "+%d/%m/%Y %T")
+	echo "[$MyDate] 4th iteration..."
+	geluster_run_iteration "4th" "3rd"
+	if [ $itrnum -gt 4 ]; then
+		for((i=5;i<=$itrnum;i++))
+		do
+			MyDate=$(date "+%d/%m/%Y %T")
+			echo "[$MyDate] $i"th" iteration..."
+			let j=$i-1
+			geluster_run_iteration $i"th" $j"th"
+		done
+	fi
+fi
 ########################################=======================================================
 MyDate=$(date "+%d/%m/%Y %T")
 echo " ">>$log
