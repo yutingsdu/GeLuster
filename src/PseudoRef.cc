@@ -420,12 +420,15 @@ void get_seudo_reference()
          if(iFlag == "1st")sequence_ok = check_sequence(idx,data[idx]);
 	 else if(iFlag == "2nd") sequence_ok = check_sequence2(idx,data[idx]);
 	 else if(iFlag == "3rd") sequence_ok = check_sequence3(idx,data[idx]);
+	 else sequence_ok = check_sequence3(idx,data[idx]);//25.6.18 issue
+
 	}
 	else
 	{
 	  if(iFlag == "1st")sequence_ok = check_sequence_drna(idx,data[idx]);
 	  else if(iFlag == "2nd") sequence_ok = check_sequence2(idx,data[idx]);
 	  else if(iFlag == "3rd") sequence_ok = check_sequence3(idx,data[idx]);
+	  else  sequence_ok = check_sequence3(idx,data[idx]);//25.6.18 issue
 	}
 	if(sequence_ok)
 	{
